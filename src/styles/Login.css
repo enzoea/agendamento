@@ -1,0 +1,73 @@
+/* Estilização geral da página de login */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6; /* Fundo claro */
+  }
+  
+  
+  /* Caixa de login */
+  .login-box {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
+  
+  /* Título */
+  .login-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #2563eb;
+  }
+  
+  /* Inputs */
+  .login-input {
+    width: 276px;
+    padding: 10px;
+    margin-bottom: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: #d1d5db;
+    color: #2563eb;
+  }
+  
+  /* Botão de login */
+  .login-button {
+    width: 100%;
+    background-color: #2563eb;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-bottom: 12px;
+  }
+
+  .cadastro-button {
+    width: 100%;
+    background-color: white;
+    color: #2563eb;
+    padding: 10px;
+    font-size: 16px;
+    border: solid 2px #2563eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .login-button:hover {
+    background-color: #1e40af;
+  }
+  
+  .footer{
+    margin-top: 16px;
+  }
