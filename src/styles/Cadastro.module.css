@@ -8,7 +8,11 @@
   .title {
     font-size: 24px;
     font-weight: bold;
-    color: #333;
+    color: #2563eb;
+  }
+
+  label {
+    color: #333
   }
   
   .error {
@@ -28,13 +32,13 @@
   input {
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid #333;
     font-size: 16px;
   }
   
   button {
     padding: 10px;
-    background-color: #febc02;
+    background-color: #2563eb;
     border: none;
     border-radius: 8px;
     color: white;
@@ -44,6 +48,6 @@
   }
   
   button:hover {
-    background-color: #f9a800;
+    background-color: #2563eb;
   }
   
