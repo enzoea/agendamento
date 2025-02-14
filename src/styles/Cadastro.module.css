@@ -32,7 +32,7 @@
   input {
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid #333;
+    border: 1px solid #1e40af;
     font-size: 16px;
   }
   
@@ -51,3 +51,11 @@
     background-color: #2563eb;
   }
   
+  .login-box {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
