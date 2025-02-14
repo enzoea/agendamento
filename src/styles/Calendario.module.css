@@ -1,0 +1,69 @@
+.container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .subtitle {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  /* Estilo para os dias do mês */
+  .daysGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    max-width: 320px;
+    margin: auto;
+  }
+  
+  .dayButton {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #333;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  
+  .dayButton:hover {
+    background-color: #ffd700;
+  }
+  
+  .dayButton.selected {
+    background-color: #febc02;
+    color: white;
+  }
+  
+  /* Estilo para os horários */
+  .timeList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .timeButton {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #333;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  
+  .timeButton:hover {
+    background-color: #febc02;
+    color: white;
+  }
+  
