@@ -1,8 +1,17 @@
 import express, { Request, Response } from 'express';
 import { promisePool } from './BancoDados'; // Certifique-se de que este arquivo está correto
+import bcrypt from 'bcrypt';
+import { body, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import axios from 'axios';
+
 
 const app = express();
 const port = 3000;
+
+dotenv.config();
+const SECRET_KEY = process.env.JWT_SECRET || 'chave_secreta';
 
 // Middleware para permitir JSON no body das requisições
 app.use(express.json());
@@ -19,9 +28,12 @@ promisePool.getConnection()
 app.post('/register', async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
     try {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        
         await promisePool.execute(
             'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-            [name, email, password]
+            [name, email, hashedPassword]
         );
         res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
     } catch (error) {
@@ -34,11 +46,18 @@ app.post('/login', async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try {
         const [rows]: any = await promisePool.execute(
-            'SELECT * FROM users WHERE email = ? AND password = ?',
-            [email, password]
+            'SELECT * FROM users WHERE email = ?',
+            [email]
         );
+
         if (rows.length > 0) {
-            res.json({ message: 'Login bem-sucedido', user: rows[0] });
+            const validPassword = await bcrypt.compare(password, rows[0].password);
+            if (validPassword) {
+                const token = jwt.sign({ userId: rows[0].id }, SECRET_KEY, { expiresIn: '1h' });
+                res.json({ message: 'Login bem-sucedido', token });
+            } else {
+                res.status(401).json({ error: 'Credenciais inválidas' });
+            }
         } else {
             res.status(401).json({ error: 'Credenciais inválidas' });
         }
