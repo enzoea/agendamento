@@ -1,58 +1,57 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../styles/Login.css"; // Importando o CSS
+import React, { useState } from "react";
+import axios from "axios";
+import styles from "../styles/Login.module.css";
 
-export default function Login() {
+const Login: React.FC = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === "admin@admin" && password === "1234") {
-      navigate("/home");
-    } else {
-      alert("Credenciais inválidas!");
+    setErro("");
+    setSucesso("");
+
+    try {
+      const response = await axios.post("http://localhost:3000/login", {
+        email: email,
+        password: senha,
+      });
+
+      if (response.status === 200) {
+        setSucesso("Login realizado com sucesso!");
+        localStorage.setItem("token", response.data.token);
+        // Redirecionar para outra página após login, se necessário
+      }
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setErro(error.response?.data?.error || "Erro ao fazer login");
+      } else {
+        setErro("Erro inesperado");
+      }
     }
+    
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <h1 className="login-title">Acesse</h1>
-        <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Digite seu email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="login-input"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Digite sua senha"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="login-input"
-            required
-          />
-          <button type="submit" className="login-button">
-            Entrar
-          </button>
-        </form>
-
-        <button  className="cadastro-button">
-            Ainda não tenho uma conta
-        </button>
-
-      </div>
-    {/* Rodapé */}
-        <footer className="footer">
-            <a href="https://enzomartinsdev.com" target="_blank" rel="noopener noreferrer">
-            Desenvolvido por Enzo Martins
-            </a>
-        </footer>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Login</h1>
+      {erro && <p className={styles.error}>{erro}</p>}
+      {sucesso && <p className={styles.success}>{sucesso}</p>}
+      <form onSubmit={handleLogin} className={styles.form}>
+        <div className={styles.inputGroup}>
+          <label htmlFor="email">E-mail:</label>
+          <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        </div>
+        <div className={styles.inputGroup}>
+          <label htmlFor="senha">Senha:</label>
+          <input type="password" id="senha" value={senha} onChange={(e) => setSenha(e.target.value)} required />
+        </div>
+        <button type="submit" className={styles.submitButton}>Entrar</button>
+      </form>
     </div>
   );
-}
+};
+
+export default Login;
