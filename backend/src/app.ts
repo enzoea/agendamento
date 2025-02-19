@@ -5,10 +5,11 @@ import { body, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import cors from 'cors';
 
 const app = express();
 const port = 3000;
-
+app.use(cors());
 dotenv.config();
 const SECRET_KEY = process.env.JWT_SECRET || 'chave_secreta';
 
@@ -17,35 +18,53 @@ app.use(express.json());
 
 // Testando a conexão com o banco de dados
 promisePool.getConnection()
-    .then(() => console.log('Conectado ao Banco de Dados'))
+    .then((connection) => {
+        console.log('Conectado ao Banco de Dados');
+        connection.release(); // Libere a conexão após testar
+    })
     .catch((error) => {
-        console.error(`Erro ao conectar ao banco de dados: ${error}`);
-        process.exit(1);
+        console.error(`Erro ao conectar ao banco de dados: ${error.message}`);
+        process.exit(1); // Encerra o processo com código de erro
     });
 
-// Rota de registro de usuário
-app.post('/register', async (req: Request, res: Response) => {
-    const { name, email, password } = req.body;
+
+   // Rota de Cadastro
+   app.post('/register', async (req: Request, res: Response): Promise<void> => {
     try {
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        console.log("Corpo da requisição recebido:", req.body); 
+        const { name, email, senha } = req.body;
         
+        if (!name || !email || !senha) {
+            res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+            return; // Apenas sai da execução
+        }
+
+        console.log("Recebendo dados para cadastro:", { name, email, senha });
+
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(senha, saltRounds);
+
         await promisePool.execute(
-            'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+            'INSERT INTO users (name, email, senha) VALUES (?, ?, ?)',
             [name, email, hashedPassword]
         );
+
         res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao cadastrar usuário' });
+        console.error("Erro ao cadastrar usuário:", error);
+        const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+        res.status(500).json({ error: 'Erro ao cadastrar usuário', details: errorMessage });
     }
 });
+
 
 // Rota de login
 app.post('/login', async (req: Request, res: Response) => {
     const { email, password } = req.body;
     try {
         const [rows]: any = await promisePool.execute(
-            'SELECT * FROM users WHERE email = ?',
+            'SELECT * FROM usuarios WHERE email = ?',
             [email]
         );
 

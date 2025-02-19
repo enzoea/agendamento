@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
 import styles from "../styles/Login.module.css";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +24,7 @@ const Login: React.FC = () => {
       if (response.status === 200) {
         setSucesso("Login realizado com sucesso!");
         localStorage.setItem("token", response.data.token);
-        // Redirecionar para outra página após login, se necessário
+        navigate("/menu");
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -31,7 +33,6 @@ const Login: React.FC = () => {
         setErro("Erro inesperado");
       }
     }
-    
   };
 
   return (
@@ -50,6 +51,7 @@ const Login: React.FC = () => {
         </div>
         <button type="submit" className={styles.submitButton}>Entrar</button>
       </form>
+      <button onClick={() => navigate("/cadastro")} className={styles.registerButton}>Cadastrar</button>
     </div>
   );
 };

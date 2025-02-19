@@ -27,6 +27,7 @@ const Cadastro: React.FC = () => {
         password: senha,
       });
 
+      console.log(response);  // Log para verificar a resposta do servidor
       if (response.status === 201) {
         setSucesso("Cadastro realizado com sucesso!");
         setNome("");
@@ -36,13 +37,14 @@ const Cadastro: React.FC = () => {
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        setErro(error.response?.data?.error || "Erro ao fazer login");
+        console.error(error);  // Log para verificar o erro completo
+        setErro(error.response?.data?.error || "Erro ao fazer o cadastro");
       } else {
         setErro("Erro inesperado");
       }
     }
-    
-  };
+};
+
 
   return (
     <div className={styles.container}>
