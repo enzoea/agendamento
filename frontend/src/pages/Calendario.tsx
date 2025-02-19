@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios"; // Importando axios para chamadas HTTP
 import styles from "../styles/Calendario.module.css"; // Importando os estilos
 
 const horariosDisponiveis = [
@@ -10,6 +11,8 @@ const Calendario: React.FC = () => {
   const [diaSelecionado, setDiaSelecionado] = useState<number | null>(null);
   const [mes, setMes] = useState<number>(new Date().getMonth()); // Mês atual
   const [ano, setAno] = useState<number>(new Date().getFullYear()); // Ano atual
+  const [horaSelecionada, setHoraSelecionada] = useState<string | null>(null); // Estado para armazenar a hora selecionada
+  const [message, setMessage] = useState<string>(""); // Mensagem de sucesso ou erro ao agendar
 
   const diasDoMes = Array.from({ length: new Date(ano, mes + 1, 0).getDate() }, (_, i) => i + 1); // Dias do mês
 
@@ -35,6 +38,27 @@ const Calendario: React.FC = () => {
 
   // Verificar se o horário está ocupado
   const isHorarioOcupado = (hora: string) => horariosOcupados.includes(hora);
+
+  // Função para fazer o agendamento
+  const agendar = async () => {
+    if (!horaSelecionada || !diaSelecionado) {
+      setMessage("Selecione um horário para agendar.");
+      return;
+    }
+  
+    try {
+      await axios.post("http://localhost:3000/agendamento", {
+        data_: `${ano}-${String(mes + 1).padStart(2, '0')}-${String(diaSelecionado).padStart(2, '0')}`,
+        hora: horaSelecionada,
+        descricao: `Agendamento para o dia ${diaSelecionado} às ${horaSelecionada}`,
+      });
+  
+      setMessage(`Agendamento realizado com sucesso!`);
+    } catch {
+      setMessage("Erro ao agendar. Tente novamente.");
+    }
+  };
+  
 
   return (
     <div className={styles.container}>
@@ -69,15 +93,27 @@ const Calendario: React.FC = () => {
               <button
                 key={hora}
                 className={`${styles.timeButton} ${isHorarioOcupado(hora) ? styles.occupied : ""}`}
-                onClick={() => alert(`Você selecionou ${hora} no dia ${diaSelecionado}`)}
+                onClick={() => setHoraSelecionada(hora)}
                 disabled={isHorarioOcupado(hora)} // Desabilita o botão se o horário estiver ocupado
               >
                 {hora}
               </button>
             ))}
           </div>
+
+          {/* Exibe o botão para agendar */}
+          {horaSelecionada && (
+            <div>
+              <button onClick={agendar} className={styles.scheduleButton}>
+                Agendar para {horaSelecionada}
+              </button>
+            </div>
+          )}
         </div>
       )}
+
+      {/* Exibe a mensagem de sucesso ou erro */}
+      {message && <p className={styles.message}>{message}</p>}
     </div>
   );
 };

@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS eventos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuarios_id INT NOT NULL,
     titulo VARCHAR(255) NOT NULL,
-    data_calendario DATE NOT NULL,
+    data_evento DATE NOT NULL,
     FOREIGN KEY (usuarios_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
@@ -22,9 +22,11 @@ CREATE TABLE IF NOT EXISTS eventos (
 CREATE TABLE IF NOT EXISTS calendario (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuarios_id INT NOT NULL,
-    data_ DATE NOT NULL,
+    data_agendamento DATE NOT NULL, -- Nome atualizado
     hora TIME NOT NULL,
     descricao VARCHAR(255) NOT NULL,
     status ENUM('PENDING', 'CONFIRMED', 'CANCELED') DEFAULT 'PENDING',
     FOREIGN KEY (usuarios_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
+
+SELECT * FROM calendario;

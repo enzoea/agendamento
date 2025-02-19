@@ -6,7 +6,6 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import axios from 'axios';
 
-
 const app = express();
 const port = 3000;
 
@@ -93,6 +92,42 @@ app.get('/events/:userId', async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Erro ao buscar eventos' });
     }
 });
+
+// Definição da interface para o corpo da requisição
+interface AgendamentoRequest {
+    usuarios_id: number;
+    data_: string;
+    hora: string;
+    descricao: string;
+}
+
+// Rota para salvar um novo agendamento
+app.post("/agendamento", async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { usuarios_id, data_, hora, descricao }: AgendamentoRequest = req.body;
+
+        // Validação dos campos obrigatórios
+        if (!usuarios_id || !data_ || !hora || !descricao) {
+            res.status(400).json({ error: "Todos os campos são obrigatórios." });
+            return; // Não retorna um valor, apenas sai da função
+        }
+
+        // Query para inserir no banco
+        const query = `INSERT INTO calendario (usuarios_id, data_, hora, descricao) VALUES (?, ?, ?, ?)`;
+        const values = [usuarios_id, data_, hora, descricao];
+
+        await promisePool.execute(query, values);
+
+        // Resposta de sucesso
+        res.status(201).json({ message: "Agendamento realizado com sucesso!" });
+    } catch (error) {
+        console.error("Erro ao agendar:", error);
+        res.status(500).json({ error: "Erro no servidor." });
+    }
+});
+
+
+
 
 // Iniciando o servidor
 app.listen(port, () => {
