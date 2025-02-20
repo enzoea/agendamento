@@ -33,21 +33,21 @@ promisePool.getConnection()
     try {
 
         console.log("Corpo da requisição recebido:", req.body); 
-        const { name, email, senha } = req.body;
+        const { nome, email, senha } = req.body;
         
-        if (!name || !email || !senha) {
+        if (!nome || !email || !senha) {
             res.status(400).json({ error: 'Todos os campos são obrigatórios' });
             return; // Apenas sai da execução
         }
 
-        console.log("Recebendo dados para cadastro:", { name, email, senha });
+        console.log("Recebendo dados para cadastro:", { nome, email, senha });
 
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(senha, saltRounds);
 
         await promisePool.execute(
-            'INSERT INTO users (name, email, senha) VALUES (?, ?, ?)',
-            [name, email, hashedPassword]
+            'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)',
+            [nome, email, hashedPassword]
         );
 
         res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });

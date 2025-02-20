@@ -22,9 +22,9 @@ const Cadastro: React.FC = () => {
 
     try {
       const response = await axios.post("http://localhost:3000/register", {
-        name: nome,
+        nome: nome,
         email: email,
-        password: senha,
+        senha: senha,
       });
 
       console.log(response);  // Log para verificar a resposta do servidor
