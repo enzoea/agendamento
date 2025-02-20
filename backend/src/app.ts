@@ -6,12 +6,15 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import cors from 'cors';
+/*import verifyToken from './middleware/middleware_tolken';*/
 
 const app = express();
 const port = 3000;
 app.use(cors());
 dotenv.config();
-const SECRET_KEY = process.env.JWT_SECRET || 'chave_secreta';
+const SECRET_KEY = process.env.JWT_SECRET || 'defaultSecretKey';  // Garantir que o segredo esteja seguro
+;
+
 
 // Middleware para permitir JSON no body das requisições
 app.use(express.json());
@@ -61,28 +64,37 @@ promisePool.getConnection()
 
 // Rota de login
 app.post('/login', async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, senha } = req.body;
     try {
-        const [rows]: any = await promisePool.execute(
-            'SELECT * FROM usuarios WHERE email = ?',
-            [email]
-        );
-
-        if (rows.length > 0) {
-            const validPassword = await bcrypt.compare(password, rows[0].password);
-            if (validPassword) {
-                const token = jwt.sign({ userId: rows[0].id }, SECRET_KEY, { expiresIn: '1h' });
-                res.json({ message: 'Login bem-sucedido', token });
-            } else {
-                res.status(401).json({ error: 'Credenciais inválidas' });
-            }
+      const [rows]: any = await promisePool.execute(
+        'SELECT * FROM usuarios WHERE email = ?',
+        [email]
+      );
+  
+      if (rows.length > 0) {
+        const validPassword = await bcrypt.compare(senha, rows[0].senha);  // Verificar senha
+        if (validPassword) {
+          const token = jwt.sign({ userId: rows[0].id }, SECRET_KEY, { expiresIn: '1h' });
+          res.json({ message: 'Login bem-sucedido', token });
         } else {
-            res.status(401).json({ error: 'Credenciais inválidas' });
+          res.status(401).json({ error: 'Credenciais inválidas' });
         }
+      } else {
+        res.status(401).json({ error: 'Credenciais inválidas' });
+      }
     } catch (error) {
-        res.status(500).json({ error: 'Erro no login' });
+        const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      res.status(500).json({ error: 'Erro no login', details: errorMessage });
     }
-});
+  });
+
+  /*app.get('/menu', verifyToken, (req: Request, res: Response) => {
+    // Aqui, você já pode acessar req.userId, por exemplo
+    res.json({ message: 'Conteúdo do menu protegido' });
+  });*/
+
+
+  
 
 // Rota para criar evento
 app.post('/event', async (req: Request, res: Response) => {

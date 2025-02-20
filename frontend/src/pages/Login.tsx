@@ -18,7 +18,7 @@ const Login: React.FC = () => {
     try {
       const response = await axios.post("http://localhost:3000/login", {
         email: email,
-        password: senha,
+        senha: senha,
       });
 
       if (response.status === 200) {
