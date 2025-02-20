@@ -124,38 +124,43 @@ app.get('/events/:userId', async (req: Request, res: Response) => {
     }
 });
 
-// Definição da interface para o corpo da requisição
-interface AgendamentoRequest {
-    usuarios_id: number;
-    data_: string;
-    hora: string;
-    descricao: string;
-}
-
-// Rota para salvar um novo agendamento
-app.post("/agendamento", async (req: Request, res: Response): Promise<void> => {
+// Rota para agendamento
+app.post('/calendario', async (req: Request, res: Response) => {
+    const { usuarioId, dia_mes, hora } = req.body;
+  
     try {
-        const { usuarios_id, data_, hora, descricao }: AgendamentoRequest = req.body;
-
-        // Validação dos campos obrigatórios
-        if (!usuarios_id || !data_ || !hora || !descricao) {
-            res.status(400).json({ error: "Todos os campos são obrigatórios." });
-            return; // Não retorna um valor, apenas sai da função
-        }
-
-        // Query para inserir no banco
-        const query = `INSERT INTO calendario (usuarios_id, data_, hora, descricao) VALUES (?, ?, ?, ?)`;
-        const values = [usuarios_id, data_, hora, descricao];
-
-        await promisePool.execute(query, values);
-
-        // Resposta de sucesso
-        res.status(201).json({ message: "Agendamento realizado com sucesso!" });
+      // Salvando no banco de dados
+      const result = await promisePool.query(
+        'INSERT INTO calendario (usuarioId, dia_mes, hora ) VALUES (?, ?, ?)',
+        [usuarioId, dia_mes, hora]
+      );
+  
+      res.status(200).json({ message: 'Agendamento realizado com sucesso!' });
     } catch (error) {
-        console.error("Erro ao agendar:", error);
-        res.status(500).json({ error: "Erro no servidor." });
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao realizar agendamento' });
     }
-});
+  });
+
+  // Rota para horarios ocupados
+  app.get('/horarios-ocupados', async (req: Request, res: Response) => {
+    const { dia_mes } = req.query;
+  
+    try {
+      // Pegando os agendamentos do banco para uma data específica
+      const result = await promisePool.query(
+        'SELECT hora FROM calendario WHERE dia_mes = ?',
+        [dia_mes]
+      );
+  
+      const horariosOcupados = result.map((row: any) => row.hora);
+      res.status(200).json(horariosOcupados);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao verificar horários ocupados' });
+    }
+  });
+  
 
 
 

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,  } from "react";
 import axios from "axios"; // Importando axios para chamadas HTTP
 import styles from "../styles/Calendario.module.css"; // Importando os estilos
 
 const horariosDisponiveis = [
   "08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"
 ];
-const horariosOcupados = ["10:00", "14:00"]; // Exemplo de horários ocupados
 
 const Calendario: React.FC = () => {
   const [diaSelecionado, setDiaSelecionado] = useState<number | null>(null);
@@ -13,6 +12,7 @@ const Calendario: React.FC = () => {
   const [ano, setAno] = useState<number>(new Date().getFullYear()); // Ano atual
   const [horaSelecionada, setHoraSelecionada] = useState<string | null>(null); // Estado para armazenar a hora selecionada
   const [message, setMessage] = useState<string>(""); // Mensagem de sucesso ou erro ao agendar
+  const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]); // Horários ocupados
 
   const diasDoMes = Array.from({ length: new Date(ano, mes + 1, 0).getDate() }, (_, i) => i + 1); // Dias do mês
 
@@ -36,6 +36,16 @@ const Calendario: React.FC = () => {
     }
   };
 
+  // Função para obter os horários ocupados para o dia selecionado
+  const obterHorariosOcupados = async (data: string) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/horarios-ocupados?data=${data}`);
+      setHorariosOcupados(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar horários ocupados', error);
+    }
+  };
+
   // Verificar se o horário está ocupado
   const isHorarioOcupado = (hora: string) => horariosOcupados.includes(hora);
 
@@ -45,20 +55,30 @@ const Calendario: React.FC = () => {
       setMessage("Selecione um horário para agendar.");
       return;
     }
-  
+
     try {
-      await axios.post("http://localhost:3000/agendamento", {
-        data_: `${ano}-${String(mes + 1).padStart(2, '0')}-${String(diaSelecionado).padStart(2, '0')}`,
+      const usuario_id = 1; // Exemplo, você pode pegar o ID do usuário logado aqui
+      const dia_mes = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(diaSelecionado).padStart(2, '0')}`;
+
+      await axios.post("http://localhost:3000/calendario", {
+        usuario_id,
+        dia_mes,
         hora: horaSelecionada,
         descricao: `Agendamento para o dia ${diaSelecionado} às ${horaSelecionada}`,
       });
-  
+
       setMessage(`Agendamento realizado com sucesso!`);
     } catch {
       setMessage("Erro ao agendar. Tente novamente.");
     }
   };
-  
+
+  // Função para lidar com o dia selecionado
+  const handleDiaSelecionado = (dia: number) => {
+    setDiaSelecionado(dia);
+    const data = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+    obterHorariosOcupados(data);
+  };
 
   return (
     <div className={styles.container}>
@@ -76,7 +96,7 @@ const Calendario: React.FC = () => {
         {diasDoMes.map((dia) => (
           <button
             key={dia}
-            onClick={() => setDiaSelecionado(dia)}
+            onClick={() => handleDiaSelecionado(dia)}
             className={`${styles.dayButton} ${diaSelecionado === dia ? styles.selected : ""}`}
           >
             {dia}
