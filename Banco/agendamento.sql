@@ -24,7 +24,6 @@ CREATE TABLE IF NOT EXISTS calendario (
     usuarios_id INT NOT NULL,
     data_agendamento DATE NOT NULL, -- Nome atualizado
     hora TIME NOT NULL,
-    descricao VARCHAR(255) NOT NULL,
     status ENUM('PENDING', 'CONFIRMED', 'CANCELED') DEFAULT 'PENDING',
     FOREIGN KEY (usuarios_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
