@@ -21,11 +21,20 @@ CREATE TABLE IF NOT EXISTS eventos (
 -- Criar tabela de calendário (agendamentos)
 CREATE TABLE IF NOT EXISTS calendario (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    usuarios_id INT NOT NULL,
-    data_agendamento DATE NOT NULL, -- Nome atualizado
+    usuarios_id INT,
+    data_agendamento DATE, -- Nome atualizado
     hora TIME NOT NULL,
     status ENUM('PENDING', 'CONFIRMED', 'CANCELED') DEFAULT 'PENDING',
     FOREIGN KEY (usuarios_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS profissionais (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL
+);
+
+
 SELECT * FROM calendario;
+SELECT * FROM eventos;
+SELECT * FROM usuarios;

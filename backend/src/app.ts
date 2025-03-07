@@ -98,11 +98,11 @@ app.post('/login', async (req: Request, res: Response) => {
 
 // Rota para criar evento
 app.post('/event', async (req: Request, res: Response) => {
-    const { user_id, title, date } = req.body;
+    const { usuarios_id, titulo, data_evento } = req.body;
     try {
         await promisePool.execute(
-            'INSERT INTO events (user_id, title, date) VALUES (?, ?, ?)',
-            [user_id, title, date]
+            'INSERT INTO events (usuarios_id, titulo, data_evento) VALUES (?, ?, ?)',
+            [usuarios_id, titulo, data_evento]
         );
         res.status(201).json({ message: 'Evento cadastrado com sucesso!' });
     } catch (error) {
@@ -112,11 +112,11 @@ app.post('/event', async (req: Request, res: Response) => {
 
 // Rota para obter eventos de um usuário específico
 app.get('/events/:userId', async (req: Request, res: Response) => {
-    const { userId } = req.params;
+    const { usuarios_id } = req.params;
     try {
         const [rows]: any = await promisePool.execute(
-            'SELECT * FROM events WHERE user_id = ?',
-            [userId]
+            'SELECT * FROM eventos WHERE usuarios_id = ?',
+            [usuarios_id]
         );
         res.json(rows);
     } catch (error) {
@@ -124,15 +124,46 @@ app.get('/events/:userId', async (req: Request, res: Response) => {
     }
 });
 
+app.post('/profissionais', async (req: Request, res: Response) => {
+  const { nome, email } = req.body;
+
+  try {
+      await promisePool.query(
+          'INSERT INTO profissionais (nome, email) VALUES (?, ?)',
+          [nome, email]
+      );
+      res.status(201).json({ message: 'Profissional cadastrado com sucesso!' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao cadastrar profissional' });
+  }
+});
+
+app.post('/disponibilidade', async (req: Request, res: Response) => {
+  const { profissional_id, data, hora, disponivel } = req.body;
+
+  try {
+      await promisePool.query(
+          'INSERT INTO disponibilidade (profissional_id, data, hora, disponivel) VALUES (?, ?, ?, ?)',
+          [profissional_id, data, hora, disponivel]
+      );
+      res.status(201).json({ message: 'Disponibilidade cadastrada com sucesso!' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao cadastrar disponibilidade' });
+  }
+});
+
+
 // Rota para agendamento
 app.post('/calendario', async (req: Request, res: Response) => {
-    const { usuarioId, dia_mes, hora } = req.body;
+    const { usuarios_id, data_agendamento, hora } = req.body;
   
     try {
       // Salvando no banco de dados
       const result = await promisePool.query(
-        'INSERT INTO calendario (usuarioId, dia_mes, hora ) VALUES (?, ?, ?)',
-        [usuarioId, dia_mes, hora]
+        'INSERT INTO calendario (usuarios_id, data_agendamento, hora ) VALUES (?, ?, ?)',
+        [usuarios_id, data_agendamento, hora]
       );
   
       res.status(200).json({ message: 'Agendamento realizado com sucesso!' });
@@ -142,15 +173,28 @@ app.post('/calendario', async (req: Request, res: Response) => {
     }
   });
 
+  app.delete('/calendario/:id', async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        await promisePool.query('DELETE FROM calendario WHERE id = ?', [id]);
+        res.status(200).json({ message: 'Agendamento deletado com sucesso!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao deletar agendamento' });
+    }
+});
+
+
   // Rota para horarios ocupados
   app.get('/horarios-ocupados', async (req: Request, res: Response) => {
-    const { dia_mes } = req.query;
+    const { data_agendamento } = req.query;
   
     try {
       // Pegando os agendamentos do banco para uma data específica
       const result = await promisePool.query(
-        'SELECT hora FROM calendario WHERE dia_mes = ?',
-        [dia_mes]
+        'SELECT hora FROM calendario WHERE data_agendamento = ?',
+        [data_agendamento]
       );
   
       const horariosOcupados = result.map((row: any) => row.hora);
