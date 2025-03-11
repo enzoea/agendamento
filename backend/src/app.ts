@@ -6,18 +6,18 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import axios from 'axios';
 import cors from 'cors';
+import bodyParser from 'body-parser';
 /*import verifyToken from './middleware/middleware_tolken';*/
-
 const app = express();
 const port = 3000;
+const path = require('path');
 app.use(cors());
 dotenv.config();
 const SECRET_KEY = process.env.JWT_SECRET || 'defaultSecretKey';  // Garantir que o segredo esteja seguro
-;
-
-
 // Middleware para permitir JSON no body das requisições
 app.use(express.json());
+app.use(bodyParser.urlencoded ({ extended: true}));
+
 
 // Testando a conexão com o banco de dados
 promisePool.getConnection()
@@ -124,18 +124,33 @@ app.get('/events/:userId', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/profissionais', async (req: Request, res: Response) => {
-  const { nome, email } = req.body;
+app.post("/profissionais", async (req: Request, res: Response) => {
+  const { nome, email, telefone, especialidade } = req.body;
+
+  if (!nome || !email || !especialidade) {
+      return res.status(400).json({ message: "Nome, e-mail e especialidade são obrigatórios." });
+  }
 
   try {
-      await promisePool.query(
-          'INSERT INTO profissionais (nome, email) VALUES (?, ?)',
-          [nome, email]
+      const [result] = await promisePool.execute(
+          "INSERT INTO profissionais (nome, email, telefone, especialidade) VALUES (?, ?, ?, ?)",
+          [nome, email, telefone, especialidade]
+
+          
       );
-      res.status(201).json({ message: 'Profissional cadastrado com sucesso!' });
+// acrescentando uma condição caso o profissional não for cadastradado, voltar o erro 400
+      if(result){
+        res.status(201).json({ message: "Profissional cadastrado com sucesso!"  });
+
+      } else {
+        res.status(400).json ({ message: "Profissional nao foi cadastrado."})
+      }
+
+
+      
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Erro ao cadastrar profissional' });
+      console.error("Erro ao cadastrar profissional:", error);
+      res.status(500).json({ message: "Erro no servidor" });
   }
 });
 
