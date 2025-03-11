@@ -11,9 +11,11 @@ interface IUsuario {
 // Essa classe esta utilizando o metodos estaticos para interagir com a tabela do Banco de DAdos
 //Criei para facil visualização
 export default class Usuario {
-
     
-    static async criandoUsuario(usuario: IUsuario):Promise<IUsuario> {
+    //nesse metodo estatico, Cria um novo usuário no banco de dados. Ele recebe um objeto user do tipo IUser,
+    //executa uma query INSERT para adicionar os dados à tabela users e retorna
+    // o usuário com o id gerado automaticamente (insertId).
+    static async CriandoUsuario(usuario: IUsuario):Promise<IUsuario> {
         const [rows] = await promisePool.execute('INSERT INTO usuarios (nome, email, senha) VALUES(?, ?, ?)',
             [usuario.nome, usuario.email, usuario.senha]
         ); console.log(`Usuario foi inserido ${rows}`);
