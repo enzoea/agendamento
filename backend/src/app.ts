@@ -1,6 +1,7 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, Router } from 'express';
 import { promisePool } from './BancoDados'; // Certifique-se de que este arquivo está correto
 import bcrypt from 'bcrypt';
+import router from './routes/Routes'
 import { body, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -17,6 +18,9 @@ const SECRET_KEY = process.env.JWT_SECRET || 'defaultSecretKey';  // Garantir qu
 // Middleware para permitir JSON no body das requisições
 app.use(express.json());
 app.use(bodyParser.urlencoded ({ extended: true}));
+
+//acesso a rotas
+app.use('api/agendamento', router);
 
 
 // Testando a conexão com o banco de dados

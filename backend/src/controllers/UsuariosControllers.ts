@@ -8,7 +8,7 @@ export const PostUsuario = async(req: Request, res: Response) => {
     try{
 
         const NovoUsuario = await Usuario.CriandoUsuario({nome, email, senha});
-        
+
         if(NovoUsuario){
         res.status(201).json({message: 'Usuario criado com sucesso!', usuario: NovoUsuario});
     } else{ 
@@ -17,6 +17,7 @@ export const PostUsuario = async(req: Request, res: Response) => {
     }
 
     } catch(error){
+        
         res.status(500).json({messaege:`Erro de cadastro do Usuario ${error}`});
     }
 }
