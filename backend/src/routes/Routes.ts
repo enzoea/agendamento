@@ -3,6 +3,6 @@ import { PostUsuario } from '../controllers/UsuariosControllers';
 const router = Express.Router();
 
 //Rotas para Usuario
-router.post('/login', PostUsuario);
+router.post('/register', PostUsuario);
 
 export default router;

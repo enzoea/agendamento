@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(bodyParser.urlencoded ({ extended: true}));
 
 //acesso a rotas
-app.use('api/agendamento', router);
+app.use('/api/agendamento', router);
 
 
 // Testando a conexão com o banco de dados
@@ -36,7 +36,7 @@ promisePool.getConnection()
 
 
    // Rota de Cadastro
-   app.post('/register', async (req: Request, res: Response): Promise<void> => {
+   /*app.post('/register', async (req: Request, res: Response): Promise<void> => {
     try {
 
         console.log("Corpo da requisição recebido:", req.body); 
@@ -63,7 +63,7 @@ promisePool.getConnection()
         const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
         res.status(500).json({ error: 'Erro ao cadastrar usuário', details: errorMessage });
     }
-});
+});*/
 
 
 // Rota de login
