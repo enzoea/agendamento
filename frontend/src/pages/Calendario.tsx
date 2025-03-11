@@ -2,18 +2,32 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "../styles/Calendario.module.css";
 
+interface Profissional {
+  id: number;
+  nome: string;
+}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface Agendamento {
+  id: number;
+  profissional_id: number;
+  data: string;
+  hora: string;
+}
+
 const horariosDisponiveis = [
   "08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"
 ];
 
 const Calendario: React.FC = () => {
   const [diaSelecionado, setDiaSelecionado] = useState<number | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [mes, setMes] = useState<number>(new Date().getMonth());
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ano, setAno] = useState<number>(new Date().getFullYear());
   const [horaSelecionada, setHoraSelecionada] = useState<string | null>(null);
   const [message, setMessage] = useState<string>("");
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
-  const [profissionais, setProfissionais] = useState<{ id: number; nome: string }[]>([]);
+  const [profissionais, setProfissionais] = useState<Profissional[]>([]);
   const [profissionalSelecionado, setProfissionalSelecionado] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,24 +43,6 @@ const Calendario: React.FC = () => {
   }, []);
 
   const diasDoMes = Array.from({ length: new Date(ano, mes + 1, 0).getDate() }, (_, i) => i + 1);
-
-  const proximoMes = () => {
-    if (mes === 11) {
-      setMes(0);
-      setAno(ano + 1);
-    } else {
-      setMes(mes + 1);
-    }
-  };
-
-  const mesAnterior = () => {
-    if (mes === 0) {
-      setMes(11);
-      setAno(ano - 1);
-    } else {
-      setMes(mes - 1);
-    }
-  };
 
   const obterHorariosOcupados = async (data: string, profissionalId: string) => {
     try {
@@ -82,52 +78,34 @@ const Calendario: React.FC = () => {
     }
   };
 
-  const handleDiaSelecionado = (dia: number) => {
-    setDiaSelecionado(dia);
-    if (profissionalSelecionado) {
-      const data = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-      obterHorariosOcupados(data, profissionalSelecionado);
-    }
-  };
-
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>📅 Agendamento</h1>
-      <p className={styles.subtitle}>Selecione um profissional e um dia para ver os horários disponíveis:</p>
-
       <select onChange={(e) => setProfissionalSelecionado(e.target.value)} className={styles.select}>
         <option value="">Selecione um profissional</option>
         {profissionais.map((profissional) => (
           <option key={profissional.id} value={profissional.id}>{profissional.nome}</option>
         ))}
       </select>
-
-      <div className={styles.nav}>
-        <button onClick={mesAnterior} className={styles.navButton}>{"<"}</button>
-        <h2 className={styles.monthTitle}>{new Date(ano, mes).toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}</h2>
-        <button onClick={proximoMes} className={styles.navButton}>{">"}</button>
-      </div>
-
       <div className={styles.calendarGrid}>
         {diasDoMes.map((dia) => (
           <button
             key={dia}
-            onClick={() => handleDiaSelecionado(dia)}
+            onClick={() => setDiaSelecionado(dia)}
             className={`${styles.dayButton} ${diaSelecionado === dia ? styles.selected : ""}`}
           >
             {dia}
           </button>
         ))}
       </div>
-
       {diaSelecionado && profissionalSelecionado && (
         <div>
-          <h2 className={styles.subtitle}>Horários disponíveis para o dia {diaSelecionado}</h2>
-          <div className={styles.timeList}>
+          <h2>Horários disponíveis</h2>
+          <div>
             {horariosDisponiveis.map((hora) => (
               <button
                 key={hora}
-                className={`${styles.timeButton} ${isHorarioOcupado(hora) ? styles.occupied : ""}`}
+                className={isHorarioOcupado(hora) ? styles.occupied : styles.timeButton}
                 onClick={() => setHoraSelecionada(hora)}
                 disabled={isHorarioOcupado(hora)}
               >
@@ -135,17 +113,11 @@ const Calendario: React.FC = () => {
               </button>
             ))}
           </div>
-
           {horaSelecionada && (
-            <div>
-              <button onClick={agendar} className={styles.scheduleButton}>
-                Agendar para {horaSelecionada}
-              </button>
-            </div>
+            <button onClick={agendar} className={styles.scheduleButton}>Agendar</button>
           )}
         </div>
       )}
-
       {message && <p className={styles.message}>{message}</p>}
     </div>
   );
