@@ -124,7 +124,7 @@ app.get('/events/:userId', async (req: Request, res: Response) => {
     }
 });
 
-app.post("/profissionais", async (req: Request, res: Response) => {
+/*app.post("/profissionais", async (req: Request, res: Response) => {
   const { nome, email, telefone, especialidade } = req.body;
 
   if (!nome || !email || !especialidade) {
@@ -152,7 +152,7 @@ app.post("/profissionais", async (req: Request, res: Response) => {
       console.error("Erro ao cadastrar profissional:", error);
       res.status(500).json({ message: "Erro no servidor" });
   }
-});
+});*/
 
 app.post('/disponibilidade', async (req: Request, res: Response) => {
   const { profissional_id, data, hora, disponivel } = req.body;
