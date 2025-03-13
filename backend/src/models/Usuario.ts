@@ -1,4 +1,4 @@
-import {promises} from 'dns';
+
 import { promisePool } from '../BancoDados';
 import msql2 from 'mysql2';
 
