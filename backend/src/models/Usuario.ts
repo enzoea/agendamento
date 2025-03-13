@@ -1,6 +1,5 @@
 import {promises} from 'dns';
 import { promisePool } from '../BancoDados';
-import bcrypt from 'bcrypt';
 import msql2 from 'mysql2';
 
 interface IUsuario {
