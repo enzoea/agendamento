@@ -67,7 +67,7 @@ promisePool.getConnection()
 
 
 // Rota de login
-app.post('/login', async (req: Request, res: Response) => {
+/*app.post('/login', async (req: Request, res: Response) => {
     const { email, senha } = req.body;
     try {
       const [rows]: any = await promisePool.execute(
