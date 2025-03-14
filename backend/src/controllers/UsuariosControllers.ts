@@ -4,10 +4,10 @@ import bcrypt from 'bcrypt';
 
 
 export const PostUsuario = async(req: Request, res: Response) => {
-    const {nome, email, senha} = req.body;
+    const {nome, email, telefone, senha} = req.body;
     console.log(`Recebendo os dados do Usuario ${req.body}`);
 
-    if (!nome || !email || !senha) {
+    if (!nome || !email || !telefone || !senha) {
         res.status(401).json({ error: 'Todos os campos são obrigatórios' });
         return; // Apenas sai da execução
     }
@@ -19,7 +19,7 @@ export const PostUsuario = async(req: Request, res: Response) => {
         const senhaHash = await bcrypt.hash(senha, salt);
 
 
-        const NovoUsuario = await Usuario.CadastroUsuario({nome, email, senha: senhaHash});
+        const NovoUsuario = await Usuario.CadastroUsuario({nome, email, telefone,  senha: senhaHash});
 
         if(NovoUsuario){
         res.status(201).json({message: 'Usuario criado com sucesso!', usuario: NovoUsuario});
@@ -71,5 +71,19 @@ export const PostLoginUsuario = async (req: Request, res: Response): Promise<voi
         res.status(500).json({ message: `Erro ao buscar usuário: ${error}` });
     }
 };
+export  const GetUsuarioByID = async (req: Request, res: Response) => {
+    const id = parseInt((req).params.id, 10)
+
+    try{
+        const usuarioID = await Usuario.BuscarUsuarioID(Number(id));
+        if (usuarioID){
+            res.status(201).json({usuarioID});
+        } else {
+            res.status(404).json({ message: 'usuario não encontrado'})
+        }
+    }catch (error){
+        res.status(500).json({ message: `Erro ao buscar o usuario ${error}`})
+    }
+}
 
 

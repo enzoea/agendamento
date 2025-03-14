@@ -6,6 +6,7 @@ interface IUsuario {
     id?: number,
     nome: string,
     email: string,
+    telefone: string,
     senha: string
 }
 // Essa classe esta utilizando o metodos estaticos para interagir com a tabela do Banco de DAdos
@@ -16,8 +17,8 @@ export default class Usuario {
     //executa uma query INSERT para adicionar os dados à tabela users e retorna
     // o usuário com o id gerado automaticamente (insertId).
     static async CadastroUsuario(usuario: IUsuario):Promise<IUsuario> {
-        const [rows] = await promisePool.execute('INSERT INTO usuarios (nome, email, senha) VALUES(?, ?, ?)',
-            [usuario.nome, usuario.email, usuario.senha]
+        const [rows] = await promisePool.execute('INSERT INTO usuario (nome, email, telefone, senha) VALUES(?, ?, ?, ?)',
+            [usuario.nome, usuario.email, usuario.telefone, usuario.senha]
         ); console.log(`Usuario foi inserido ${rows}`);
 
         return{...usuario, id:(rows as msql2.ResultSetHeader).insertId}
@@ -27,9 +28,21 @@ export default class Usuario {
         if(!email) return null;
         console.log(`Buscando usuario pelo email: ${email}`);
 
-        const [rows] = await promisePool.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
+        const [rows] = await promisePool.execute('SELECT * FROM usuario WHERE email = ?', [email]);
         
         const usuario = (rows as IUsuario[])[0];
         return usuario || null;
+    }
+
+    static  async BuscarUsuarioID(id: number): Promise<IUsuario | null> {
+
+        if (!id || isNaN(id)) {
+            console.error("Erro: ID inválido recebido.");
+            return null;
+        }
+        const [rows] = await promisePool.execute('SELECT * FROM usuario WHERE id = ?', [id]);
+
+        const usuarioId = (rows as IUsuario[])[0];
+        return usuarioId || null;
     }
 }
