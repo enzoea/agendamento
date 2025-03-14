@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import {Request, Response, NextFunction} from "express";
 import {decode} from "node:punycode";
 
-const SECRET_KEY = process.env.JWT_SECRET || 'mateus123';
+const SECRET_KEY = process.env.JWT_SECRET || 'fallback_secret';
 
 export  const VerificarToken = (req: Request, res: Response, next: NextFunction) => {
     const token = req.header("Authorization")?.replace("Bearer", "");
