@@ -5,12 +5,12 @@ import  {PostLoginProfissional, PostRegisterProfissional} from "../controllers/P
 const router = Express.Router();
 
 //Rotas para Usuario
-router.post('/register/usuario', PostUsuario);
-router.post('/login/usuario', PostLoginUsuario);
-router.get('/searchID/:id/usuario', GetUsuarioByID);
+router.post('/usuario/register', PostUsuario);
+router.post('/usuario/login', PostLoginUsuario);
+router.get('/usuario/searchID/:id', GetUsuarioByID);
 
 //Rota para Profissional
-router.post('/registe/profissional', PostRegisterProfissional);
-router.post('/login/profissional', PostLoginProfissional);
+router.post('/profissional/register', PostRegisterProfissional);
+router.post('/profissional/login', PostLoginProfissional);
 
 export default router;

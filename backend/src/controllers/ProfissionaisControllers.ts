@@ -1,6 +1,9 @@
 import  {Request, Response} from "express";
 import Profissional from "../models/Profissional";
 import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
+const SECRET_KEY = process.env.JWT_SECRET || "fallback_secret";
+
 
 export const PostRegisterProfissional = async  (req: Request, res: Response) => {
     const {nome, email, senha, telefone, especialidade} = req.body;
@@ -34,34 +37,35 @@ export const PostLoginProfissional = async (req: Request, res: Response): Promis
     try {
         const { email, senha } = req.body;
 
-        // Validação do email e senha
         if (!email || !senha) {
-            res.status(400).json({ message: 'Email e senha são obrigatórios' });
-            return; // Impede a execução do restante do código
-        }
-
-        const profissional = await Profissional.LoginProfissional(String(email));
-
-        console.log("Senha recebida no login:", senha);
-
-        if (!profissional) {
-            res.status(404).json({ message: 'Usuário não encontrado' });
+            res.status(400).json({ message: "Email e senha são obrigatórios" });
             return;
         }
 
-        // Verifica se a senha está correta
-        const senhaCorreta =  await bcrypt.compare(senha, profissional.senha);
-        console.log(senhaCorreta)
+        const profissional = await Profissional.LoginProfissional(email);
+        if (!profissional) {
+            res.status(404).json({ message: "Usuário não encontrado" });
+            return;
+        }
 
         console.log(`Senha armazenada no banco: ${profissional.senha}`);
 
+        const senhaCorreta = await bcrypt.compare(senha, profissional.senha);
         if (!senhaCorreta) {
-            res.status(401).json({ message: 'Senha incorreta' });
+            res.status(403).json({ message: "Senha incorreta" });
             return;
         }
 
-        res.json({ message: `Login realizado com sucesso!`, profissional });
+        // Removendo a senha antes de enviar o profissional na resposta
+        const { senha: _, ...profissionalSemSenha } = profissional;
+
+        const token = jwt.sign({ id: profissional.id, email: profissional.email }, SECRET_KEY, {
+            expiresIn: "1h"
+        });
+
+        res.json({ message: "Login realizado com sucesso!", token, profissional: profissionalSemSenha });
     } catch (error) {
-        res.status(500).json({ message: `Erro ao buscar usuário: ${error}` });
+        console.error("Erro ao buscar usuário:", error);
+        res.status(500).json({ message: "Erro ao buscar usuário no banco de dados." });
     }
 };
