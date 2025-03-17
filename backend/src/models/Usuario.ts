@@ -17,7 +17,7 @@ export default class Usuario {
     //executa uma query INSERT para adicionar os dados à tabela users e retorna
     // o usuário com o id gerado automaticamente (insertId).
     static async CadastroUsuario(usuario: IUsuario):Promise<IUsuario> {
-        const [rows] = await promisePool.execute('INSERT INTO usuario (nome, email, telefone, senha) VALUES(?, ?, ?, ?)',
+        const [rows] = await promisePool.execute('INSERT INTO usuarios (nome, email, telefone, senha) VALUES(?, ?, ?, ?)',
             [usuario.nome, usuario.email, usuario.telefone, usuario.senha]
         ); console.log(`Usuario foi inserido ${rows}`);
 
@@ -28,7 +28,7 @@ export default class Usuario {
         if(!email) return null;
         console.log(`Buscando usuario pelo email: ${email}`);
 
-        const [rows] = await promisePool.execute('SELECT * FROM usuario WHERE email = ?', [email]);
+        const [rows] = await promisePool.execute('SELECT * FROM usuarios WHERE email = ?', [email]);
         
         const usuario = (rows as IUsuario[])[0];
         return usuario || null;
@@ -40,7 +40,7 @@ export default class Usuario {
             console.error("Erro: ID inválido recebido.");
             return null;
         }
-        const [rows] = await promisePool.execute('SELECT * FROM usuario WHERE id = ?', [id]);
+        const [rows] = await promisePool.execute('SELECT * FROM usuarios WHERE id = ?', [id]);
 
         const usuarioId = (rows as IUsuario[])[0];
         return usuarioId || null;

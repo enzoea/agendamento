@@ -15,7 +15,7 @@ interface IProfissional {
 export default class Profissional {
     static async CriandoProfissional(profissional: IProfissional): Promise<IProfissional> {
 
-        const [rows] = await promisePool.execute('INSERT INTO profissional(nome, email, senha, telefone, especialidade) VALUES( ?, ?, ?, ?, ?)',
+        const [rows] = await promisePool.execute('INSERT INTO profissionais(nome, email, senha, telefone, especialidade) VALUES( ?, ?, ?, ?, ?)',
         [profissional.nome, profissional.email, profissional.senha, profissional.telefone, profissional.especialidade]);
         console.log(`Usuario inserido ${rows}`);
 
@@ -27,7 +27,7 @@ export default class Profissional {
         if(!email) return null;
         console.log(`Buscando usuario pelo email: ${email}`);
 
-        const [rows] = await promisePool.execute('SELECT * FROM profissional WHERE email = ?', [email]);
+        const [rows] = await promisePool.execute('SELECT * FROM profissionais WHERE email = ?', [email]);
 
         const profissional = (rows as IProfissional[])[0];
         return profissional || null;

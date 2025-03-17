@@ -2,39 +2,65 @@ CREATE database agendamento;
 
 use agendamento;
 
-CREATE TABLE IF NOT EXISTS usuarios (
+CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    senha VARCHAR(255) NOT NULL
-);
-
--- Criar tabela de eventos (opcional, se ainda quiser manter eventos separados)
-CREATE TABLE IF NOT EXISTS eventos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuarios_id INT NOT NULL,
-    titulo VARCHAR(255) NOT NULL,
-    data_evento DATE NOT NULL,
-    FOREIGN KEY (usuarios_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
-
--- Criar tabela de calendário (agendamentos)
-CREATE TABLE IF NOT EXISTS calendario (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuarios_id INT,
-    data_agendamento DATE, -- Nome atualizado
-    hora TIME NOT NULL,
-    status ENUM('PENDING', 'CONFIRMED', 'CANCELED') DEFAULT 'PENDING',
-    FOREIGN KEY (usuarios_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    email VARCHAR(150) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    telefone VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE profissionais (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
     telefone VARCHAR(20),
-    especialidade VARCHAR(100),
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    especialidade VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE agenda_profissional (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    profissional_id INT NOT NULL,
+    data DATE NOT NULL,
+    horario TIME NOT NULL,
+    disponivel BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE
+);
+
+
+-- Criar tabela de eventos (opcional, se ainda quiser manter eventos separados)
+CREATE TABLE servicos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    preco DECIMAL(10,2) NOT NULL,
+    duracao INT NOT NULL COMMENT 'Duração do serviço em minutos',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+
+-- Criar tabela de calendário (agendamentos)
+
+CREATE TABLE agendamentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    profissional_id INT NOT NULL,
+    servico_id INT NOT NULL,
+    data DATE NOT NULL,
+    horario TIME NOT NULL,
+    status ENUM('pendente', 'confirmado', 'cancelado') DEFAULT 'pendente',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (profissional_id) REFERENCES profissionais(id) ON DELETE CASCADE,
+    FOREIGN KEY (servico_id) REFERENCES servicos(id) ON DELETE CASCADE
 );
 
 
