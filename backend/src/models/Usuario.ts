@@ -32,7 +32,7 @@ export default class Usuario {
         
         const usuario = (rows as IUsuario[])[0];
         return usuario || null;
-    }
+    };
 
     static  async BuscarUsuarioID(id: number): Promise<IUsuario | null> {
 
@@ -44,5 +44,22 @@ export default class Usuario {
 
         const usuarioId = (rows as IUsuario[])[0];
         return usuarioId || null;
+    };
+
+    static async atualizarDadosUsuario (id: number, usuario: IUsuario): Promise<void> {
+        await promisePool.execute('UPDATE usuarios SET nome = ?, email = ?,  telefone = ? WHERE id = ?', [
+            usuario.nome || null,
+            usuario.email || null,
+            usuario.telefone || null,
+            id || null
+        ]);
+
+    };
+
+    static async atualizarSenhaUsuario (email: string, usuario: IUsuario ): Promise<void> {
+        await promisePool.execute('UPDATE usuarios SET senha = ? WHERE email = ?', [
+            usuario.senha || null,
+            email || null
+        ]);
     }
 }
