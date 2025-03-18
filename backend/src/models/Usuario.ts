@@ -46,7 +46,7 @@ export default class Usuario {
         return usuarioId || null;
     };
 
-    static async atualizarDadosUsuario (id: number, usuario: IUsuario): Promise<void> {
+    static async atualizarDadosUsuario (id: number, usuario: IUsuario, email: any, telefone: any): Promise<void> {
         await promisePool.execute('UPDATE usuarios SET nome = ?, email = ?,  telefone = ? WHERE id = ?', [
             usuario.nome || null,
             usuario.email || null,

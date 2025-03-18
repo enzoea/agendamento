@@ -56,7 +56,7 @@ export const PostLoginUsuario = async (req: Request, res: Response): Promise<voi
         }
 
         // Verifica se a senha está correta
-        const senhaCorreta =  await bcrypt.compare(senha, usuario.senha);
+        const senhaCorreta : boolean =  await bcrypt.compare(senha, usuario.senha);
         console.log(senhaCorreta)
 
         console.log(`Senha armazenada no banco: ${usuario.senha}`);
@@ -72,7 +72,7 @@ export const PostLoginUsuario = async (req: Request, res: Response): Promise<voi
     }
 };
 export  const GetUsuarioByID = async (req: Request, res: Response) => {
-    const id = parseInt((req).params.id, 10)
+    const id : number = parseInt((req).params.id, 10)
 
     try{
         const usuarioID = await Usuario.BuscarUsuarioID(Number(id));
@@ -83,6 +83,38 @@ export  const GetUsuarioByID = async (req: Request, res: Response) => {
         }
     }catch (error){
         res.status(500).json({ message: `Erro ao buscar o usuario ${error}`})
+    }
+};
+
+export const SetUsuarioByID = async (req: Request, res: Response) => {
+    const id : number = parseInt(req.params.id);
+    const {nome, email, telefone} = req.body;
+
+    try{
+        console.log(`Atualizando paciente com ID ${id}`);
+        console.log(`Dados recebidos ${req.body}`);
+
+        const AtUsuario : void = await Usuario.atualizarDadosUsuario(id, nome, email, telefone);
+        console.log(`Atualização do usuario ${AtUsuario}`);
+    }catch (error){
+        console.error(`Erro a atualizar usuario ${error}`);
+        res.status(500).json({message: `Erro ao atualizar o usuario: ${error}`})
+    }
+}
+
+export const SetUsuarioSenha = async (req: Request, res: Response) => {
+    const {senha} = req.body;
+    const email : string = req.params.email
+    try{
+
+        console.log(`Dados recebidos ${req.body}`);
+
+        const AtSenhaUsuario : void = await Usuario.atualizarSenhaUsuario(email, senha);
+        console.log(`Atualização senah do usuario ${AtSenhaUsuario}`);
+    }catch (error){
+        console.error(`Erro a atualizar usuario ${error}`);
+        res.status(500).json({message: `Erro ao atualizar o usuario: ${error}`})
+
     }
 }
 
