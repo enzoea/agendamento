@@ -94,8 +94,10 @@ export const SetUsuarioByID = async (req: Request, res: Response) => {
         console.log(`Atualizando paciente com ID ${id}`);
         console.log(`Dados recebidos ${req.body}`);
 
-        const AtUsuario : void = await Usuario.atualizarDadosUsuario(id, nome, email, telefone);
-        console.log(`Atualização do usuario ${AtUsuario}`);
+        await Usuario.atualizarDadosUsuario(id, {nome, email, telefone});
+        console.log(`Usuário com ID ${id} atualizado com sucesso.`);
+        return res.status(200).json({ message: "Usuário atualizado com sucesso!" });
+
     }catch (error){
         console.error(`Erro a atualizar usuario ${error}`);
         res.status(500).json({message: `Erro ao atualizar o usuario: ${error}`})
