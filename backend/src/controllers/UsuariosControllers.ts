@@ -94,9 +94,20 @@ export const SetUsuarioByID = async (req: Request, res: Response) => {
         console.log(`Atualizando paciente com ID ${id}`);
         console.log(`Dados recebidos ${req.body}`);
 
-        await Usuario.atualizarDadosUsuario(id, {nome, email, telefone});
-        console.log(`Usuário com ID ${id} atualizado com sucesso.`);
-        return res.status(200).json({ message: "Usuário atualizado com sucesso!" });
+        const usuarioAtual = await Usuario.BuscarUsuarioID(id);
+        if(!usuarioAtual) {
+            res.status(404).json({ message: "Usuario não encontrados"});
+            return;
+        }
+
+        const usuarioAtualizado = { nome: nome || usuarioAtual.nome, email: email || usuarioAtual.email, telefone : telefone || usuarioAtual.telefone, senha: usuarioAtual.senha};
+
+        const ATT= await Usuario.atualizarDadosUsuario(id, usuarioAtualizado);
+        console.log(`Usuario com id ${id} atualizado com sucesso!`);
+        res.status(200).json({message: `nome: ${nome}, email: ${email}, telefone: ${telefone}`})
+
+
+
 
     }catch (error){
         console.error(`Erro a atualizar usuario ${error}`);
